@@ -7,18 +7,24 @@ const token = 'mytocken'
 const appid = 'wxfa27f6d688c8d154'
 const appsecret = 'e25cbb6fd01be73d5b64eeb587554672'
 
-const front_url = 'http://alexyan91.ngrok.cc'
+const front_url = 'http://qiniu-breakfast.herokuapp.com/'
 var basic_access_token = undefined
 var js_ticket = undefined
+
+router.get('/test_status', (req, res) => {
+  res.json({
+    access_token: basic_access_token,
+    js_ticket: js_ticket
+  })
+})
 
 /**
  * 获取 jsconfig
  */
 router.get('/jsconfig', (req, res) => {
-  var url = 'http://alexyan91.ngrok.cc/'
   var timestamp = getTimesTamp()
   var noncestr = getNonceStr()
-  var str = 'jsapi_ticket=' + js_ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + url
+  var str = 'jsapi_ticket=' + js_ticket + '&noncestr='+ noncestr+'&timestamp=' + timestamp + '&url=' + front_url
   var signature = crypto.createHash('sha1').update(str).digest('hex')
   res.json({
     appId: appid,
@@ -52,7 +58,7 @@ router.get('/wechat/auth', (req, res) => {
     var openid = data.openid
     var access_token = data.access_token
     // console.log(openid, access_token)
-    res.redirect(front_url+'/#'+req.query.state+'/?openid='+openid)
+    res.redirect(front_url+'#'+req.query.state+'/?openid='+openid)
   })
 })
 
