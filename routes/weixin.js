@@ -38,12 +38,15 @@ router.get('/jsconfig', (req, res) => {
  * 微信服务器校验
  */
 router.get('/wechat', (req, res) => {
-  var echostr = req.query.echostr
 
+  var signature = req.query.signature
+  var timestamp = req.query.timestamp
+  var nonce = req.query.nonce
+  var echostr = req.query.echostr
   if (check(signature, timestamp, nonce)) {
-    res.send(echostr)   // 确认来源是微信，并把echostr返回给微信服务器。
+      res.send(echostr)   // 确认来源是微信，并把echostr返回给微信服务器。
   } else {
-    res.status(400).json({ code : -1, msg : 'You aren\'t wechat server !'})
+      res.status(400).json({ code : -1, msg : 'You aren\'t wechat server !'})
   }
 })
 
@@ -65,7 +68,11 @@ router.get('/wechat/auth', (req, res) => {
 module.exports = router
 
 function check (signature, timestamp, nonce) {
-  var tmpArr = [token, timestamp, nonce]
+  var tmpArr = Array(token, timestamp, nonce).sort().join("");
+  var sha1 = crypto.createHash('sha1');
+  sha1.update(tmpArr);
+  tmpArr = sha1.digest('hex');
+  return (tmpArr == signature);
 }
 
 function getTimesTamp() {
