@@ -1,11 +1,21 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var app = express();
-var weixinRoute = require('./routes/weixin.js');
+const express = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const app = express();
+const weixinRoute = require('./routes/weixin.js');
+const userRoute = require('./routes/user.js');
+const mongoose = require('mongoose');
 
-app.set('port', (process.env.PORT || 5000));
+// open databse
+mongoose.connect('mongodb://test:axibatestqiniu@ds031865.mlab.com:31865/text');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function (callback) {
+  console.log('mongodb opened!');
+});
+
+app.set('port', (process.env.PORT || 8080));
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -22,6 +32,7 @@ app.get('/', function(request, response) {
 });
 
 app.use('/api/weixin', weixinRoute);
+app.use('/api/user', userRoute);
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
