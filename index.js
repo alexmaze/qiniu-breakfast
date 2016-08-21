@@ -6,6 +6,7 @@ const app = express();
 const weixinRoute = require('./routes/weixin.js');
 const userRoute = require('./routes/user.js');
 const mongoose = require('mongoose');
+const config = require('./config.js');
 
 // open databse
 mongoose.connect('mongodb://test:axibatestqiniu@ds031865.mlab.com:31865/text');
@@ -28,7 +29,7 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {
-  response.render('pages/index');
+  response.redirect(`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${config.appid}&redirect_uri=${config.redirect}&response_type=code&scope=${config.scope}&state=abc#wechat_redirect`)
 });
 
 app.use('/api/weixin', weixinRoute);

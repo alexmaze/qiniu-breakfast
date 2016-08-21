@@ -3,13 +3,18 @@ const router = express.Router()
 const crypto = require('crypto')
 const superagent = require('superagent')
 
-const token = 'mytocken'
-const appid = 'wxfa27f6d688c8d154'
-const appsecret = 'e25cbb6fd01be73d5b64eeb587554672'
+const config = require('../config.js');
 
-const front_url = 'http://qiniu-breakfast.herokuapp.com/'
+const token = config.token
+const appid = config.appid
+const appsecret = config.appsecret
+const front_url = config.front_url
+
 var basic_access_token = undefined
 var js_ticket = undefined
+
+const user = require('../models/user.js');
+const User = user.User;
 
 router.get('/test_status', (req, res) => {
   res.json({
@@ -61,7 +66,22 @@ router.get('/wechat/auth', (req, res) => {
     var openid = data.openid
     var access_token = data.access_token
     // console.log(openid, access_token)
-    res.redirect(front_url+'#'+req.query.state+'/?openid='+openid)
+
+    User.find({
+      openid: openid
+    }).exec((err, users) => {
+      if (err) {
+        res.status(500).json('db error', err);
+      }
+      if (users.length > 0) {
+        res.render('pages/index', users[0]);
+      } else {
+        res.render('pages/register', {
+          openid
+        })
+      }
+    })
+    // res.redirect(front_url+'#'+req.query.state+'/?openid='+openid)
   })
 })
 

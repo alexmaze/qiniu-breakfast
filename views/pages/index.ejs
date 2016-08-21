@@ -6,6 +6,15 @@
 </head>
 
 <body>
-  <p>hello world!</p>
+  <p><%- name %></p>
+  <button>确认领取早餐</button>
 </body>
+<script type="text/javascript">
+window.user = {
+  _id: '<%- _id %>',
+  openid: '<%- openid %>',
+  name: '<%- name %>'
+};
+console.log(window.user);
+</script>
 </html>
